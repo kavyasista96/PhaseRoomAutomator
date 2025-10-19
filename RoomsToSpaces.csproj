@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- ===== Base settings ===== -->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform>x64</Platform>
+
+    <ProjectGuid>{8A1F7C1B-2E2B-4C0C-9D2B-1234567890AB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+
+    <!-- Namespace & DLL name your .addin expects -->
+    <RootNamespace>PhaseRoomAutomator</RootNamespace>
+    <AssemblyName>PhaseRoomAutomator</AssemblyName>
+
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+    <RestoreProjectStyle>PackagesConfig</RestoreProjectStyle>
+
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <!-- ===== Configs ===== -->
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+
+  <!-- ===== Revit install autodetect ===== -->
+  <PropertyGroup Condition="'$(RevitInstallDir)'=='' and Exists('C:\Program Files\Autodesk\Revit 2026\RevitAPI.dll')">
+    <RevitInstallDir>C:\Program Files\Autodesk\Revit 2026</RevitInstallDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(RevitInstallDir)'=='' and Exists('C:\Program Files\Autodesk\Revit 2025\RevitAPI.dll')">
+    <RevitInstallDir>C:\Program Files\Autodesk\Revit 2025</RevitInstallDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(RevitInstallDir)'=='' and Exists('C:\Program Files\Autodesk\Revit 2024\RevitAPI.dll')">
+    <RevitInstallDir>C:\Program Files\Autodesk\Revit 2024</RevitInstallDir>
+  </PropertyGroup>
+
+  <!-- ===== Compile the files you actually use ===== -->
+  <ItemGroup>
+    <Compile Include="src\RoomPhaseCopier.cs" />
+    <Compile Include="src\App.cs" />
+    <!-- Temporarily skip this file:
+    <Compile Include="RoomsToSpaces.cs" />
+    -->
+  </ItemGroup>
+
+  <!-- ===== References ===== -->
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="RevitAPI">
+      <HintPath>$(RevitInstallDir)\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>$(RevitInstallDir)\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- ===== Post-build: drop DLL directly into Revit 2026 AddIns ===== -->
+  <PropertyGroup>
+    <RevitAddinsDir>C:\Users\kavya\AppData\Roaming\Autodesk\Revit\Addins\2026</RevitAddinsDir>
+  </PropertyGroup>
+  <Target Name="AfterBuild">
+    <MakeDir Directories="$(RevitAddinsDir)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RevitAddinsDir)" />
+  </Target>
+
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,17 @@
+# Build outputs
+bin/
+obj/
+*.pdb
+*.log
+
+# IDE
+.vs/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Never commit Autodesk DLLs
+RevitAPI.dll
+RevitAPIUI.dll
